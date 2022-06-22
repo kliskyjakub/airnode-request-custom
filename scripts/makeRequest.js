@@ -7,22 +7,13 @@ const rrpAddress = "0xa0AD79D995DdeeB18a14eAef56A549A04e3Aa1Bd";
 const requesterAddress = "0xb4f8509fd8038f6eE162788Be214b16Db0dA8aB6";
 const requesterArtifacts = require("../artifacts/contracts/Requester.sol/Requester.json");
 const sponsorAddress = "0x75c609caaf6f98b9cae92b1e0b4112029de3f860";
-// TODO: derive sponsor wallet address
-const sponsorWalletAddress = "0x75c609caaf6f98b9cae92b1e0b4112029de3f860";
+const sponsorWalletAddress = "0x95BE54B7A61e86793B9F519253c346a3C17272BE";
 const endpointId = "0x2ef0d3d8c2ebd31ec9246001c3b5090dcda2f40001642a978a8a11bda63ee7d0";
 const params = {
     "_path": "value",
     "_type": "string",
     "account": "0x4baad650a6e58c4d3be40358657bac526927b53d"
 }
-
-// export const printResponse = async (requestId: string) => {
-//     const integrationInfo = readIntegrationInfo();
-//     const requester = await getDeployedContract(`contracts/${integrationInfo.integration}/Requester.sol`);
-//
-//     // Divided by 1e6, because the response value is multiplied with 1e6 by Airnode
-//     cliPrint.info(`${coinLabel} price is ${(await requester.fulfilledData(requestId)) / 1e6} USD`);
-// };
 
 const setMaxPromiseTimeout = (promise, timeoutMs) => {
     Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject('Timeout exceeded!'), timeoutMs))]);
@@ -38,9 +29,10 @@ const waitForFulfillment = async (requestId) => {
     const failed = new Promise((resolve) =>
         hre.ethers.provider.once(rrpContract.filters.FailedRequest(null, requestId), resolve)
     ).then((rawRequestFailedLog) => {
-        // const log = rrpContract.interface.parseLog(rawRequestFailedLog as ethers.Event);
-        // throw new Error(`Request failed. Reason:\n${log.args.errorMessage}`);
-        console.log("error")
+        //TODO: solve this - should be a type error
+        const log = rrpContract.interface.parseLog(rawRequestFailedLog);
+        throw new Error(`Request failed. Reason:\n${log.args.errorMessage}`);
+        // console.log("error")
     });
 
     // Airnode request can either:
